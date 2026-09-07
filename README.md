@@ -28,7 +28,18 @@ PollMe consists of two tiny parts:
 2. **Important**: Before compiling, change the `https://yourdomain.com/poll/presenter.html` URL in the Swift file to match your own web host URL.
 3. Run the compiled app. You will see a 📊 icon in your macOS menu bar.
 
-### 3. Creating Polls in Keynote
+### 3. Setting up the QR Code
+Open `web/presenter.html` and look for the inline script at the very bottom. 
+Change `POLL_URL` to your actual website URL. The page will automatically render a highly reliable, mathematically generated QR code directly in the browser (no external image API required!)
+
+```html
+<script>
+    // CHANGE THIS URL TO YOUR ACTUAL DOMAIN!
+    const POLL_URL = "https://YOUR_DOMAIN_HERE.com/poll";
+    ...
+```
+
+### 4. Creating Polls in Keynote
 Simply type the following syntax into the Presenter Notes of any slide:
 
 ```text
@@ -52,11 +63,3 @@ Need to run the same poll for a different class later in the day? Just click the
 - macOS 11.0 or later
 - Apple Keynote
 - Any standard web host with PHP installed (no database required)
-
-### 4. Setting up the QR Code
-The presentation screen automatically displays a QR code so your students can scan it to vote. You do **not** need to manually generate or download an image! 
-
-Open `web/presenter.html` and look for the `<img>` tag near the bottom. Simply change `YOUR_DOMAIN_HERE.com/poll` to your actual website URL, and the system will automatically generate a high-quality QR code on the fly:
-```html
-<img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=https://YOUR_DOMAIN_HERE.com/poll" ...>
-```
