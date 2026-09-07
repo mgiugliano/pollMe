@@ -22,7 +22,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate {
     var lastSlideNotes = ""
     var statusItem: NSStatusItem!
     
-    // We assume there might be a stuck poll on the server when we start
     var isPollActiveOnServer = true 
     
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -32,11 +31,36 @@ class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate {
     }
     
     func setupApp() {
+        var pollUrl = UserDefaults.standard.string(forKey: "pollUrl")
+        
+        // If not set, prompt the user
+        if pollUrl == nil || pollUrl!.isEmpty || pollUrl == "https://YOUR_DOMAIN_HERE.com/poll/presenter.html" {
+            let alert = NSAlert()
+            alert.messageText = "Configure PollMe"
+            alert.informativeText = "Please enter the URL where you hosted the web files (e.g. https://yourwebsite.com/poll):"
+            
+            let input = NSTextField(frame: NSRect(x: 0, y: 0, width: 300, height: 24))
+            input.stringValue = "https://"
+            alert.accessoryView = input
+            alert.addButton(withTitle: "Save & Start")
+            alert.runModal()
+            
+            var urlString = input.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !urlString.hasSuffix("/") { urlString += "/" }
+            urlString += "presenter.html"
+            
+            UserDefaults.standard.set(urlString, forKey: "pollUrl")
+            pollUrl = urlString
+        }
+        
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         if let button = statusItem.button {
             button.title = "📊"
         }
         let menu = NSMenu()
+        menu.addItem(NSMenuItem(title: "About PollMe", action: #selector(showAbout), keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: "Change Server URL...", action: #selector(changeUrl), keyEquivalent: ""))
+        menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Clear Current Poll", action: #selector(clearCurrentPoll), keyEquivalent: "c"))
         menu.addItem(NSMenuItem(title: "Clear All Polls", action: #selector(clearAllPolls), keyEquivalent: ""))
         menu.addItem(NSMenuItem.separator())
@@ -54,8 +78,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate {
         webView.autoresizingMask = [.width, .height]
         webView.navigationDelegate = self
         
-        let url = URL(string: "https://yourdomain.com/poll/presenter.html")!
-        webView.load(URLRequest(url: url))
+        if let safeUrl = URL(string: pollUrl!) {
+            webView.load(URLRequest(url: safeUrl))
+        }
         
         window.contentView?.addSubview(webView)
         window.makeKeyAndOrderFront(nil)
@@ -64,7 +89,31 @@ class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate {
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(checkKeynote), userInfo: nil, repeats: true)
     }
     
-    // When the webpage finishes loading, force close any stuck poll on the server just to be safe
+    @objc func showAbout() {
+        let alert = NSAlert()
+        alert.messageText = "PollMe"
+        alert.informativeText = "Developed by Michele Giugliano\n\nA frictionless, anonymous live polling system natively integrated into Apple Keynote."
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: "OK")
+        alert.addButton(withTitle: "Visit GitHub")
+        
+        if alert.runModal() == .alertSecondButtonReturn {
+            if let url = URL(string: "https://github.com/mgiugliano/pollMe") {
+                NSWorkspace.shared.open(url)
+            }
+        }
+    }
+    
+    @objc func changeUrl() {
+        UserDefaults.standard.removeObject(forKey: "pollUrl")
+        let alert = NSAlert()
+        alert.messageText = "Restart Required"
+        alert.informativeText = "The app will now quit. Please launch it again to enter your new URL."
+        alert.addButton(withTitle: "Quit")
+        alert.runModal()
+        NSApplication.shared.terminate(nil)
+    }
+    
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         webView.evaluateJavaScript("if(window.closeActivePoll) window.closeActivePoll();", completionHandler: nil)
         isPollActiveOnServer = false

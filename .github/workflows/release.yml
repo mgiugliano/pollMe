@@ -1,0 +1,52 @@
+name: Build and Release macOS App
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build macOS App
+        run: |
+          cd macOS_App
+          swiftc PollMeCompanion.swift -o PollMeCompanionApp
+          mkdir -p PollMe.app/Contents/MacOS
+          cp PollMeCompanionApp PollMe.app/Contents/MacOS/PollMe
+          cat << 'PLIST' > PollMe.app/Contents/Info.plist
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>CFBundleExecutable</key>
+              <string>PollMe</string>
+              <key>CFBundleIdentifier</key>
+              <string>info.giugliano.PollMe</string>
+              <key>CFBundleName</key>
+              <string>PollMe</string>
+              <key>CFBundleVersion</key>
+              <string>1.0</string>
+              <key>CFBundleShortVersionString</key>
+              <string>1.0</string>
+              <key>LSUIElement</key>
+              <true/>
+              <key>NSHighResolutionCapable</key>
+              <true/>
+              <key>NSAppleEventsUsageDescription</key>
+              <string>PollMe needs to read your Keynote presenter notes to display live polls.</string>
+          </dict>
+          </plist>
+          PLIST
+          zip -r PollMe_macOS.zip PollMe.app
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: macOS_App/PollMe_macOS.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

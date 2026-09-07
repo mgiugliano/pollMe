@@ -41,7 +41,7 @@ function parsePollNotes(notes) {
 
 const chartCtx = document.getElementById('resultsChart');
 let chartInstance = null;
-let presenterPollData = null;
+let presenterPollData = null; // DO NOT clear currentPollId so menu bar clear works while paused!
 let fetchVotesInterval = null;
 
 window.updatePollFromKeynote = function(notes) {
@@ -185,7 +185,7 @@ window.clearAllPolls = function() {
 window.closeActivePoll = function() {
     fetch(API_URL + '?action=close_poll').then(() => {
         console.log("Poll closed");
-        presenterPollData = null;
+        presenterPollData = null; // DO NOT clear currentPollId so menu bar clear works while paused!
         if (fetchVotesInterval) clearInterval(fetchVotesInterval);
     });
 }
