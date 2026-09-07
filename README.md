@@ -25,7 +25,7 @@ PollMe consists of two tiny parts:
 ### 2. macOS Companion App
 1. Open `PollMeCompanion.swift` in Xcode or compile it directly via terminal:
    `swiftc PollMeCompanion.swift -o PollMeCompanionApp`
-2. **Important**: Before compiling, change the `https://giugliano.info/poll/presenter.html` URL in the Swift file to match your own web host URL.
+2. **Important**: Before compiling, change the `https://yourdomain.com/poll/presenter.html` URL in the Swift file to match your own web host URL.
 3. Run the compiled app. You will see a 📊 icon in your macOS menu bar.
 
 ### 3. Creating Polls in Keynote

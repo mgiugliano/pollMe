@@ -54,7 +54,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate {
         webView.autoresizingMask = [.width, .height]
         webView.navigationDelegate = self
         
-        let url = URL(string: "https://giugliano.info/poll/presenter.html")!
+        let url = URL(string: "https://yourdomain.com/poll/presenter.html")!
         webView.load(URLRequest(url: url))
         
         window.contentView?.addSubview(webView)

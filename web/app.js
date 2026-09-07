@@ -1,6 +1,6 @@
 let API_URL = 'api.php'; 
 if (window.location.protocol === 'file:') {
-    API_URL = 'https://giugliano.info/poll/api.php';
+    API_URL = 'https://yourdomain.com/poll/api.php';
 }
 
 let currentPollId = null;
