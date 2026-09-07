@@ -52,3 +52,11 @@ Need to run the same poll for a different class later in the day? Just click the
 - macOS 11.0 or later
 - Apple Keynote
 - Any standard web host with PHP installed (no database required)
+
+### 4. Setting up the QR Code
+The presentation screen automatically displays a QR code so your students can scan it to vote. You do **not** need to manually generate or download an image! 
+
+Open `web/presenter.html` and look for the `<img>` tag near the bottom. Simply change `YOUR_DOMAIN_HERE.com/poll` to your actual website URL, and the system will automatically generate a high-quality QR code on the fly:
+```html
+<img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=https://YOUR_DOMAIN_HERE.com/poll" ...>
+```
