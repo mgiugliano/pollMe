@@ -220,6 +220,11 @@ if (document.getElementById('voter-options')) {
                     return;
                 }
                 
+                let lastResetAllTime = 0;
+                if (data.reset_all_time && data.reset_all_time !== lastResetAllTime) {
+                    lastResetAllTime = data.reset_all_time;
+                    Object.keys(localStorage).forEach(k => { if(k.startsWith("voted_")) localStorage.removeItem(k); });
+                }
                 const isReset = data.reset_time && data.reset_time !== lastResetTime;
                 if (isReset) {
                     lastResetTime = data.reset_time;

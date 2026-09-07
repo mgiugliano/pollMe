@@ -102,7 +102,7 @@ switch ($action) {
         if (file_exists($pollFile)) {
             $poll = json_decode(file_get_contents($pollFile), true);
             if (($poll['id'] ?? '') === $pollId) {
-                $poll['reset_time'] = time();
+                $poll['reset_time'] = time(); $poll['reset_all_time'] = time();
                 file_put_contents($pollFile, json_encode($poll));
             }
         }
@@ -113,7 +113,7 @@ switch ($action) {
         file_put_contents($votesFile, json_encode([]));
         if (file_exists($pollFile)) {
             $poll = json_decode(file_get_contents($pollFile), true);
-            $poll['reset_time'] = time();
+            $poll['reset_time'] = time(); $poll['reset_all_time'] = time();
             file_put_contents($pollFile, json_encode($poll));
         }
         echo json_encode(["status" => "success"]);
